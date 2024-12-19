@@ -21,7 +21,7 @@ public class Emp {
     private String image; // 头像
     private Short job; // 职位 1班主任 2讲师 3学工主管 4 教研主管 5咨询师
     private LocalDate entrydate; // 入职时间
-    private Integer detpId; //部门id
+    private Integer deptId; //部门id
     private LocalDateTime createTime; // 创建时间
     private LocalDateTime updateTime; // 更新时间
 }

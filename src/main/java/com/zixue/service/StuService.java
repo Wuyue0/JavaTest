@@ -8,13 +8,13 @@ public interface StuService {
     // 获取学生列表
      List<Student> listStu(String name, String sex);
 
-     // 删除某个学生
+     // 删除
      int delete(Integer id);
 
-     // 新增学生
+     // 新增
      void insert(Student student);
 
-     // 更新学生
+     // 更新
      void update(Student student);
 
      // 根据id查询某个学生

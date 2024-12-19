@@ -52,6 +52,7 @@ public class DeptController {
     public Result queryById(@PathVariable Integer id){
         log.info("查询id为{}的部门",id);
         Dept dept = deptService.queryById(id);
-        return Result.success(dept);
+        if(dept != null)return Result.success(dept);
+        return Result.success("没有找到id为"+id+"的部门");
     }
 }

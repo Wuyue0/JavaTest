@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeptServiceImpl implements DeptService {
@@ -39,9 +40,8 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public Dept queryById(Integer id) {
-        System.out.println("接收的值"+ id);
-//        Dept dept = (Dept) deptMapper.list().stream().filter(d -> d.getId().equals(id));
-        return null;
+        Optional<Dept> result = deptMapper.list().stream().filter(d -> d.getId().equals(id)).findFirst();
+        return result.orElse(null);
     }
 
 }
