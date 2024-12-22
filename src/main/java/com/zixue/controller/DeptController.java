@@ -38,14 +38,14 @@ public class DeptController {
     public Result insert(@RequestBody Dept dept){
         log.info("新增部门{}",dept);
         deptService.add(dept);
-        return Result.success();
+        return Result.success(dept);
     }
     // 修改
     @PutMapping
     public Result update(@RequestBody Dept dept){
         log.info("修改部门{}",dept);
         deptService.edit(dept);
-        return Result.success();
+        return Result.success(dept);
     }
     // 查询指定id的部门
     @GetMapping("/{id}")

@@ -40,6 +40,13 @@
             <el-table-column prop="deptName" label="部门" > </el-table-column>
           </el-table>
         </div>
+      
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          姓名：<input type="text" name="name"><br>
+          年龄：<input type="text" name ="age"><br>
+          头像： <input type="file" name="image"><br>
+          <input type="submit" value="submit">
+        </form>
     </div>
     <script>
         const { createApp, ref } = Vue

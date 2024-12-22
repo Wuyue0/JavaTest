@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+#  数据库链接信息
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/test
+    username: root
+    password: wuyue521
+#    文件上传配置
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+#mybatis配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+#阿里云oss
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucketName: emp-project
+    region: cn-beijing
+
+

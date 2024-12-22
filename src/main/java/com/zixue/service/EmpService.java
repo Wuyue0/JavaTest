@@ -9,20 +9,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface EmpService {
-    // 获取
-    List<Emp> list(String name, String sex);
-
-    // 删除
-    int delete(Integer id);
-
     // 新增
     void add(Emp emp);
+
+    // 删除
+    int delete(List<Integer> ids);
 
     // 更新
     void edit(Emp emp);
 
     // 根据id查询
-    Student queryById(Integer id);
+    Emp queryById(Integer id);
 
+    // 分页查询
     PageBean page(Integer page, Integer pageSize, String name, Short gender, LocalDate begin, LocalDate end);
+
+    // 用户登录
+    Emp login(Emp emp);
 }

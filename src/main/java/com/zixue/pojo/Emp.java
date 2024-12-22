@@ -19,6 +19,7 @@ public class Emp {
     private String name;  // 姓名
     private Short gender;  // 性别 1男 2女
     private String image; // 头像
+    private String deptName; //部门名称
     private Short job; // 职位 1班主任 2讲师 3学工主管 4 教研主管 5咨询师
     private LocalDate entrydate; // 入职时间
     private Integer deptId; //部门id
