@@ -4,7 +4,7 @@ spring:
 #  数据库链接信息
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/test
+    url: jdbc:mysql://localhost:3306/test
     username: root
     password: wuyue521
 #    文件上传配置
@@ -23,5 +23,3 @@ aliyun:
     endpoint: https://oss-cn-beijing.aliyuncs.com
     bucketName: emp-project
     region: cn-beijing
-
-

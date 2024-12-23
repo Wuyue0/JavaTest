@@ -1,10 +1,7 @@
 package com.zixue.utils;
 
 import com.aliyun.oss.*;
-import com.aliyun.oss.common.auth.*;
-import com.aliyun.oss.common.comm.SignVersion;
 import com.aliyun.oss.model.PutObjectRequest;
-import com.aliyun.oss.model.PutObjectResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,18 +17,14 @@ import java.util.Objects;
 @Component
 public class AliOSSUtils {
     @Autowired
-    AliOSSProperties aliOSSProperties;
+    AliOSSConfig aliOSSConfig;
 
-    // 连接的oss对象
+    // oss对象
+    @Autowired
     private OSS ossClient;
 
+    // 上传文件
     public String upload(MultipartFile file) throws Exception {
-        // 获取属性注入
-        String endpoint = aliOSSProperties.getEndpoint();
-        String bucketName = aliOSSProperties.getBucketName();
-        String region = aliOSSProperties.getRegion();
-
-        // 使用 ByteArrayOutputStream 缓存文件流
         try (
              InputStream inputStream = file.getInputStream();
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
@@ -43,42 +36,37 @@ public class AliOSSUtils {
             }
             // 获取文件的字节数组
             byte[] fileBytes = byteArrayOutputStream.toByteArray();
-            // 计算文件的MD5值
-            String fileHash = calculateMD5(new ByteArrayInputStream(fileBytes));
             // 生成文件名
-            String fileName = fileHash + getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-            // 创建OSSClient实例
-            EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
-            ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
-            clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
-            ossClient = OSSClientBuilder.create()
-                    .endpoint(endpoint)
-                    .credentialsProvider(credentialsProvider)
-                    .clientConfiguration(clientBuilderConfiguration)
-                    .region(region)
-                    .build();
-
+            String fileName = generateFileName(file, fileBytes);
             // 4.获取文件的访问地址
-            String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+            String url = generateFilePath(fileName);
             // 判断OSS当前图片是否存在
-            boolean exists = ossClient.doesObjectExist(bucketName, fileName);
+            boolean exists = isExist(fileName);
             // 判断OSS当前图片是否存在
             if (exists) {
                 return url;
-            } else {
-                // 上传文件到OSS
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, new ByteArrayInputStream(fileBytes));
-                PutObjectResult result = ossClient.putObject(putObjectRequest);
-                return url;
             }
+            String bucketName = aliOSSConfig.getBucketName();
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, new ByteArrayInputStream(fileBytes));
+            ossClient.putObject(putObjectRequest);
+            return url;
         } catch (IOException e) {
             throw new IOException("上传文件时发生错误", e);
-        } finally {
-            // 关闭流
-            if (ossClient != null){
-                ossClient.shutdown();
-            }
         }
+    }
+
+    //删除文件
+    public String delete(String fileName) {
+        if(fileName == null || fileName.isEmpty()) return "文件名为空，请检查";
+        if(!isExist(fileName)) return "删除的文件不存在";
+        ossClient.deleteObject(aliOSSConfig.getBucketName(), fileName); // oss 删除文件
+        return null;
+    }
+
+    // 判断oss文件是否存在
+    public boolean isExist(String fileName) {
+      String bucketName = aliOSSConfig.getBucketName();
+      return ossClient.doesObjectExist(bucketName, fileName);
     }
 
     // 返回文件的后缀名
@@ -90,6 +78,20 @@ public class AliOSSUtils {
         return ""; // 如果没有后缀名，返回空字符串
     }
 
+    // 生成文件名 带后缀
+    private String generateFileName(MultipartFile file, byte[] fileBytes) throws NoSuchAlgorithmException, IOException {
+        String fileHash = calculateMD5(new ByteArrayInputStream(fileBytes));
+        return fileHash + getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+    }
+
+    // 生成完整的文件路径
+    private String generateFilePath(String fileName) throws IOException {
+        String endpoint = aliOSSConfig.getEndpoint();
+        String bucketName = aliOSSConfig.getBucketName();
+        return endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+    }
+
+    // 计算文件的MD5值
     public String calculateMD5(InputStream inputStream) throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] buffer = new byte[1024];

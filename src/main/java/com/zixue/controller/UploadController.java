@@ -5,20 +5,14 @@ import com.zixue.pojo.Result;
 import com.zixue.utils.AliOSSUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
 
 @Slf4j
 @RestController
 public class UploadController {
     @Autowired
     AliOSSUtils aliOSSUtils;
-
 //    @PostMapping("/upload")
 //    public Result upload(String name, Integer age, MultipartFile image) throws IOException {
 //        log.info("文件上传:{},{},{}", name, age, image);
@@ -36,5 +30,13 @@ public class UploadController {
         String url = aliOSSUtils.upload(image);
         log.info("oss文件路径的名字:{}", url);
         return Result.success(url);
+    }
+
+    @DeleteMapping("/upload/{url}")
+    public Result delete(@PathVariable(name="url") String fileName){
+        log.info("删除oss文件名字:{}", fileName);
+        String result = aliOSSUtils.delete(fileName);
+        if(result != null) return Result.error(result);
+        return Result.success("删除成功");
     }
 }
