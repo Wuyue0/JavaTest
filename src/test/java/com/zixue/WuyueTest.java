@@ -5,9 +5,12 @@ import com.zixue.pojo.Student;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 import java.util.*;
 
@@ -71,6 +74,24 @@ public class WuyueTest {
                         .parseClaimsJws("eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzM1MDkyMTU4LCJ1c2VybmFtZSI6Ind1eXVlIn0.2yS2h2qsbT7qAuBP12-KreMHDSo5oaxBlrhIm0RwMKA")
                         .getBody();
         System.out.println(claims);
+    }
+
+    @Autowired
+    SAXReader saxReader;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Test
+    public void testLoader(){
+        String[] beans = applicationContext.getBeanDefinitionNames();
+
+        for (String bean : beans) {
+            System.out.println(bean);
+        }
+
+        System.out.println("测试专用"+  Arrays.toString(beans));
+
     }
 
 }
