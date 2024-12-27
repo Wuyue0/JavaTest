@@ -18,7 +18,7 @@ public class LoginCheckFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
-        System.out.println("拦截前操作 一般不用写 会自动销毁");
+        System.out.println("拦截前操作～～");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class LoginCheckFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("销毁了 一般不用写 自动会销毁~~");
+        System.out.println("应用停止自动销毁～");
         Filter.super.destroy();
     }
 }

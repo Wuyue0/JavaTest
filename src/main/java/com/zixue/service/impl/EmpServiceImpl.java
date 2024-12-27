@@ -28,7 +28,7 @@ public class EmpServiceImpl implements EmpService {
         return 0;
     }
 
-//    新增员工
+    /* 新增员工 */
     @Override
     public void add(Emp emp) {
         emp.setCreateTime(LocalDateTime.now());
