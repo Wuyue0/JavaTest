@@ -1,5 +1,6 @@
 package com.zixue.controller;
 
+import com.zixue.anno.Log;
 import com.zixue.pojo.Emp;
 import com.zixue.pojo.PageBean;
 import com.zixue.pojo.Result;
@@ -33,6 +34,7 @@ public class EmpController {
     }
 
     // 新增
+    @Log
     @PostMapping
     public Result insert(@RequestBody Emp emp){
         log.info("新增员工{}",emp);
@@ -41,6 +43,7 @@ public class EmpController {
     }
 
     // 删除
+    @Log
     @DeleteMapping("/{ids}")
     public Result delete(@PathVariable List<Integer> ids){
         log.info("删除id为{}的员工",ids);
@@ -49,6 +52,7 @@ public class EmpController {
     }
 
     // 修改
+    @Log
     @PutMapping
     public Result update(@RequestBody Emp emp){
         log.info("修改员工{}",emp);

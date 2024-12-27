@@ -1,7 +1,9 @@
 package com.zixue.aop;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
@@ -11,16 +13,26 @@ import org.springframework.stereotype.Component;
 public class TimeAspect {
 
     // 切入点表达式 抽取公共的切入点表达式
-    @Pointcut("execution(* com.zixue.service.impl.DeptServiceImpl.*(..))")
+    @Pointcut("execution(* com.zixue.service.impl.DeptServiceImpl.queryById(..))")
     public void pt(){}
 
     @Before("pt()")
-    public void before(){
+    public void before(JoinPoint joinPoint){
         log.info("前置通知～before");
     }
 
     @Around("pt()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        String className = joinPoint.getTarget().getClass().getName(); // 获取目标类名字
+        log.info("className:{}", className);
+        Signature signature = joinPoint.getSignature(); // 获取目标方法签名
+        log.info("signature:{}", signature);
+        String mthodName = joinPoint.getSignature().getName(); // 获取目标方法名字
+        log.info("mthodName:{}", mthodName);
+        Object[] args = joinPoint.getArgs(); // 获取目标方法参数
+        log.info("args:{}", args);
+
+
         log.info("环绕通知前～around～before");
         Object result = joinPoint.proceed();
         log.info("环绕通知后～around～after");

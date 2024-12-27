@@ -1,5 +1,6 @@
 package com.zixue.utils;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -21,8 +22,8 @@ public class JwtUtils {
     }
 
     // 解析令牌
-    public static void parseJwt(String jwt){
-        Jwts.parser()
+    public static Claims parseJwt(String jwt){
+        return Jwts.parser()
                 .setSigningKey(signKey)
                 .parseClaimsJws(jwt)
                 .getBody();
