@@ -1,5 +1,6 @@
 package com.zixue.controller;
 
+import com.zixue.anno.Log;
 import com.zixue.pojo.Dept;
 import com.zixue.pojo.Result;
 import com.zixue.service.DeptService;
@@ -26,6 +27,7 @@ public class DeptController {
     }
 
     // 删除
+    @Log
     @DeleteMapping("/{id}")
     public Result  delete(@PathVariable Integer id){
         log.info("删除id为{}的部门",id);
@@ -34,6 +36,7 @@ public class DeptController {
     }
 
     // 新增
+    @Log
     @PostMapping
     public Result insert(@RequestBody Dept dept){
         log.info("新增部门{}",dept);
@@ -41,6 +44,7 @@ public class DeptController {
         return Result.success(dept);
     }
     // 修改
+    @Log
     @PutMapping
     public Result update(@RequestBody Dept dept){
         log.info("修改部门{}",dept);
