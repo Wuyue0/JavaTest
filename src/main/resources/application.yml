@@ -23,3 +23,7 @@ aliyun:
     endpoint: https://oss-cn-beijing.aliyuncs.com
     bucketName: emp-project
     region: cn-beijing
+#spring 事务管理日志
+logging:
+  level:
+    org.springframework.jdbc.support.JdbcTransactionManager: debug

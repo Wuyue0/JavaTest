@@ -6,7 +6,9 @@ import com.zixue.pojo.OperateLog;
 import com.zixue.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +29,16 @@ public class LogAspect {
     @Autowired
     private OperateLogMapper operateLogMapper;
 
-    @Around("@annotation(com.zixue.anno.Log)")
-    public Object recordLog(ProceedingJoinPoint joinPoint) throws Throwable {
-         // 操做人的id
-         // 获取请求头令牌
-         String jwt =  request.getHeader("token");
-         Claims claims = JwtUtils.parseJwt(jwt);
-         Integer operateUser = (Integer) claims.get("id");
-         log.info("jwt:{}", claims);
+    private OperateLog insertLog(JoinPoint joinPoint){
+        // 操做人的id 获取请求头令牌
+        String jwt =  request.getHeader("token");
+        Claims claims = JwtUtils.parseJwt(jwt);
+        Integer operateUser = (Integer) claims.get("id");
+        log.info("jwt:{}", claims);
+
+        String returnValue = null;
+        Long costTime = null;
+
         // 操作时间
         LocalDateTime operateTime = LocalDateTime.now();
         // 操作类名
@@ -44,6 +48,18 @@ public class LogAspect {
         // 方法参数
         Object[] args = joinPoint.getArgs();
         String  methodParams = Arrays.toString(args);
+        // 初始化对象
+        OperateLog  operateLog = new OperateLog(null, operateUser, operateTime, className, mehtodName, methodParams, returnValue, costTime);
+        log.info("插入的对象", operateLog);
+        return operateLog;
+    }
+
+
+
+    //开启一个新的事务
+    @Around("@annotation(com.zixue.anno.Log)")
+    public Object recordLog(ProceedingJoinPoint joinPoint) throws Throwable {
+
         // 计算耗时
         long begin = System.currentTimeMillis();
         Object result = joinPoint.proceed();
@@ -52,12 +68,20 @@ public class LogAspect {
         String returnValue = JSON.toJSONString(result);
         // 执行耗时
         Long costTime = end - begin;
-        // 初始化对象
-        OperateLog  operateLog = new OperateLog(null, operateUser, operateTime, className, mehtodName, methodParams, returnValue, costTime);
-        log.info("插入的对象", operateLog);
+        OperateLog operateLog = insertLog(joinPoint);
+        operateLog.setReturnValue(returnValue);
+        operateLog.setCostTime(costTime);
         // 记录操作日志
         operateLogMapper.insert(operateLog);
-        log.info("日志记录完毕");
         return result;
+    }
+
+    @AfterThrowing(pointcut = "@annotation(com.zixue.anno.Log)", throwing = "ex")
+    public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) throws Throwable {
+        // 记录异常日志
+        OperateLog operateLog = insertLog(joinPoint);
+        operateLog.setReturnValue(ex.getMessage());
+        // 记录操作日志
+        operateLogMapper.insert(operateLog);
     }
 }
