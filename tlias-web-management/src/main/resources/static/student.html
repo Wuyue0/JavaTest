@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生表～吴越1</title>
+    <script src="https://unpkg.com/vue@3"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <style>
+      .el-form{
+        display: flex;
+        justify-content: center;
+      }
+      .el-form-item{
+        margin-bottom: 0px !important;
+      }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-form :model="form" label-width="auto" :inline="true">
+          <el-form-item label="用户名称">
+            <el-input v-model="form.name" ></el-input>
+          </el-form-item>
+          <el-form-item label="用户性别">
+            <el-input v-model="form.sex" ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="query">查询</el-button>
+          </el-form-item>
+        </el-form>
+        <div style="padding: 10px">
+          <el-table :data="tableData" style="width: 100%" v-loading="loading">
+              <el-table-column prop="id" label="学生id" > </el-table-column>
+              <el-table-column prop="name" label="姓名" > </el-table-column>
+              <el-table-column prop="address" label="地址" > </el-table-column>
+              <el-table-column prop="sex" label="性别" > </el-table-column>
+            <el-table-column prop="deptName" label="部门" > </el-table-column>
+          </el-table>
+        </div>
+      
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          姓名：<input type="text" name="name"><br>
+          年龄：<input type="text" name ="age"><br>
+          头像： <input type="file" name="image"><br>
+          <input type="submit" value="submit">
+        </form>
+    </div>
+    <script>
+        const { createApp, ref } = Vue
+        const app =createApp({
+          data(){
+            return {
+              message: "Hello vue!",
+              loading: true,
+              tableData: [
+                {
+                  name: '2016-05-03',
+                  address: 'Tom',
+                  sex: 'No. 189, Grove St, Los Angeles',
+                }
+              ],
+              form: {
+                name:'',
+                sex: ''
+              }
+            }
+          },
+          mounted() {
+            this.query()
+          },
+          methods: {
+            query() {
+              const self = this
+              this.loading = true
+              axios.get('/list', {params: {...this.form}})
+                      .then(function (response) {
+                        console.log(response);
+                        const {code, data, msg} = response.data
+                        if(code != 1) {
+                          self.loading = false
+                          self.$message.error(msg)
+                          return
+                        }
+                        self.tableData =  data
+                        self.loading = false
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                        self.loading = false
+                      });
+            }
+          }
+        })
+        app.use(ElementPlus)
+        app.mount('#app')
+
+
+    </script>
+</body>
+</html>

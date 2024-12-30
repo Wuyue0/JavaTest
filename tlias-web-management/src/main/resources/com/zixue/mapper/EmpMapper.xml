@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zixue.mapper.EmpMapper">
+    <!--    修改-->
+    <update id="update">
+        update emp
+        <set>
+            username = #{username},
+            name = #{name},
+            gender = #{gender},
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="job != null">
+                job = #{job},
+            </if>
+            <if test="entrydate != null">
+                entrydate = #{entrydate},
+            </if>
+            <if test="deptId != null">
+                dept_id = #{deptId},
+            </if>
+            update_time = #{updateTime}
+        </set>
+        where id = #{id}
+    </update>
+    <!--    批量删除-->
+    <delete id="delete">
+        delete from emp where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--    查询-->
+    <select id="list" resultType="com.zixue.pojo.Emp">
+       select t1.*, t2.name dept_name  from emp t1 left join dept t2 on t1.dept_id = t2.id
+        <where>
+            <if test='name != null and name != ""'>
+                t1.name like concat('%',#{name},'%')
+            </if>
+            <if test='gender != null'>
+                and gender = #{gender}
+            </if>
+            <if test='begin != null and end != null'>
+                and entrydate between #{begin} and #{end}
+            </if>
+        </where>
+        order by t1.update_time desc
+    </select>
+
+    <!--    查询指定id-->
+    <select id="queryById" resultType="com.zixue.pojo.Emp">
+        select t1.*, t2.name dept_name  from emp t1 left join dept t2 on t1.dept_id = t2.id where t1.id = #{id}
+    </select>
+</mapper>
